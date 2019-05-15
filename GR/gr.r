@@ -1,5 +1,6 @@
 # gr.r
 
+<<<<<<< HEAD
 # import 2016 gr data
 
 
@@ -138,3 +139,6 @@ svubyuresults <-
 # Q - What is the average time it takes to graduate?  Could SVU be < BYU's?
 
 # Q - Can I do this for all schools in the data?
+=======
+# import 2016 gr data
+>>>>>>> 3d90091d0124f3eefbb6c92928ad038215e2f2c1

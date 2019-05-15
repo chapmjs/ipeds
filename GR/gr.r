@@ -29,3 +29,49 @@ library(stringr)
 svubyu <- grhd2016 %>%
   filter (str_detect(instnm,"Southern Virginia|Brigham Young"))
 
+##  At this point I don't know the GR data well enough to make sense of the 
+## different types of GR
+
+
+# GRTYPE:
+# 40	Total exclusions 4-year schools
+# 2	  4-year institutions, Adjusted cohort (revised cohort minus exclusions)
+# 3	  4-year institutions, Completers within 150% of normal time
+# 4	  4-year institutions, Transfer-out students
+# 41	4-year institutions, noncompleters still enrolled
+# 42	4-year institutions, No longer enrolled
+
+## What are the school's unitid?
+svubyu %>%
+  group_by(instnm, unitid) %>%
+  summarize(n = n())
+
+# instnm                          unitid     n
+# <chr>                            <dbl> <int>
+# 1 Brigham Young University-Hawaii 230047    16
+# 2 Brigham Young University-Idaho  142522    27
+# 3 Brigham Young University-Provo  230038    15
+# 4 Southern Virginia University    233611    17
+
+## What is the 2016 150% graduation rate for each school?
+svubyu %>%
+  filter(chrtstat == 13) %>% 
+  group_by(instnm, unitid, chrtstat, grtotlt, cohort) %>%
+  summarize(n = n())
+
+ ## wait, why are there 2 cohorts for SVU?
+ ## COHORT	1	Bachelor's/ equiv +  other degree/certif-seeking 2010 subcohorts (4-yr institution)
+ ## COHORT	2	Bachelor's or equiv 2010  subcohort (4-yr institution)
+ ## COHORT	3	Other degree/certif-seeking 2010 subcohort (4-yr institution)
+ ## COHORT	4	Degree/certif-seeking students 2013 cohort ( 2-yr institution)
+
+svubyu %>%
+  filter(chrtstat == 13, cohort == 2) %>% #chrtstat of 13 is completers in 150%, cohort of 2 is bachelor's or equi 2010 subcohort 4yr inst
+  group_by(instnm, unitid, chrtstat, grtotlt, cohort) %>%
+  summarize(n = n())
+
+ # Next, we need the total cohort for each school
+svubyu %>%
+  filter(chrtstat == 12, cohort == 2) %>% #chrtstat of 12 is adj cohort = revised - exclusions
+  group_by(instnm, unitid, chrtstat, grtotlt, cohort) %>%
+  summarize(n = n())

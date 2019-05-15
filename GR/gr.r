@@ -75,3 +75,66 @@ svubyu %>%
   filter(chrtstat == 12, cohort == 2) %>% #chrtstat of 12 is adj cohort = revised - exclusions
   group_by(instnm, unitid, chrtstat, grtotlt, cohort) %>%
   summarize(n = n())
+
+ # Next, how do I perform the last step - divide completers / total cohort?
+   # should I combine the output into a single output?  then mutate?
+
+svubyu %>%
+  filter(chrtstat == 13, cohort == 2) %>% #chrtstat of 13 is completers in 150%, cohort of 2 is bachelor's or equi 2010 subcohort 4yr inst
+  mutate (completers150 = grtotlt) %>%
+  group_by(instnm, unitid, chrtstat, completers150, cohort) %>%
+  summarize(n = n())
+
+svubyucombined <- 
+  merge(
+  (svubyu %>%
+    filter(chrtstat == 13, cohort == 2) %>% #chrtstat of 13 is completers in 150%, cohort of 2 is bachelor's or equi 2010 subcohort 4yr inst
+    mutate (completers150 = grtotlt) %>%
+    group_by(instnm, unitid, completers150, cohort) %>%
+    summarize(n = n())),
+  svubyu %>%
+    filter(chrtstat == 12, cohort == 2) %>% #chrtstat of 13 is completers in 150%, cohort of 2 is bachelor's or equi 2010 subcohort 4yr inst
+    mutate (totalcohort = grtotlt) %>%
+    group_by(instnm, unitid, totalcohort, cohort) %>%
+    summarize(n = n()),
+  by = "unitid")
+  
+svubyuresults <-
+  svubyucombined %>%
+    mutate(grrate = completers150 / totalcohort) %>%
+    select(instnm.x, unitid, completers150, totalcohort, grrate) %>%
+    arrange(instnm.x)
+
+
+
+# instnm.x
+# 
+# unitid
+# 
+# completers150
+# 
+# totalcohort
+# 
+# grrate
+# 
+# instnm.x
+# 
+# unitid
+# 
+# completers150
+# 
+# totalcohort
+
+# grrate
+# 1	Brigham Young University-Hawaii	230047	218	403	0.5409429
+# 2	Brigham Young University-Idaho	142522	672	1196	0.5618729
+# 3	Brigham Young University-Provo	230038	2837	3415	0.8307467
+# 4	Southern Virginia University	233611	74	226	0.3274336
+
+# Wed, May 15, 2019 2:03 pm, Wow! I did it. May not be elegant, but it's valid.
+# Started at 11:15 this morning.  So, just under 3 hours to do this.  Not bad
+# Next question I have is for those students that complete, 
+
+# Q - What is the average time it takes to graduate?  Could SVU be < BYU's?
+
+# Q - Can I do this for all schools in the data?
